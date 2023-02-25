@@ -1,4 +1,3 @@
-
 import 'package:conduit/conduit.dart';
 import 'package:dart_application_1/model/financialrecord.dart';
 import 'package:dart_application_1/model/getmodel.dart';
@@ -12,45 +11,49 @@ class AppFinancialRecordConroller extends ResourceController {
   final ManagedContext managedContext;
 
   @Operation.get()
-  Future<Response> getFinancialRecords(@Bind.body() GetModel options) async {
+  Future<Response> getFinancialRecords(
+      @Bind.query("option") String? option,
+      @Bind.query("type") String? type,
+      @Bind.query("status") bool status,
+      @Bind.query("fetch") int fetch,
+      @Bind.query("offset") int offset) async {
     try {
       Query<FinancialRecord> records;
-      if (options.type == null || options.option == null) {
+      if (type == null || option == null) {
         records = Query<FinancialRecord>(managedContext);
       } else {
-        switch (options.type) {
+        switch (type) {
           case "category":
             {
               records = Query<FinancialRecord>(managedContext)
-                ..where((element) => element.category)
-                    .contains(options.option ?? '')
-                ..where((element) => element.status).equalTo(options.status)
-                ..fetchLimit = options.fetch
-                ..offset = options.offset;
+                ..where((element) => element.category).contains(option ?? '')
+                ..where((element) => element.status).equalTo(status)
+                ..fetchLimit = fetch
+                ..offset = offset;
               break;
             }
           case "name":
             {
               records = Query<FinancialRecord>(managedContext)
                 ..where((element) => element.operationName)
-                    .contains(options.option ?? "")
-                ..where((element) => element.status).equalTo(options.status)
-                ..fetchLimit = options.fetch
-                ..offset = options.offset;
+                    .contains(option ?? "")
+                ..where((element) => element.status).equalTo(status)
+                ..fetchLimit = fetch
+                ..offset = offset;
               break;
             }
           default:
             {
               records = Query<FinancialRecord>(managedContext)
-                ..fetchLimit = options.fetch
-                ..offset = options.offset;
+                ..fetchLimit = fetch
+                ..offset = offset;
               break;
             }
         }
       }
       List<FinancialRecord> response = await records.fetch();
 
-      return Response.ok(response);
+      return AppResponse.ok(body: response);
     } catch (e) {
       return AppResponse.serverError(e, message: 'Ошибка получения данных');
     }
@@ -64,7 +67,7 @@ class AppFinancialRecordConroller extends ResourceController {
 
       var t = await record.fetchOne();
 
-      return Response.ok(t);
+      return AppResponse.ok(body: t);
     } catch (e) {
       return AppResponse.serverError(e, message: 'Ошибка получения данных');
     }
@@ -86,7 +89,12 @@ class AppFinancialRecordConroller extends ResourceController {
         int id = -1;
         await managedContext.transaction((transaction) async {
           final qCreateRecord = Query<FinancialRecord>(transaction)
-            ..values = record;
+        ..values.category = record.category
+        ..values.description = record.description
+        ..values.date = record.date
+        ..values.status = record.status
+        ..values.operationName = record.operationName
+        ..values.sum = record.sum;
           final createdRecord = await qCreateRecord.insert();
           id = createdRecord.id!;
         });
@@ -104,7 +112,7 @@ class AppFinancialRecordConroller extends ResourceController {
           value,
         );
       } on QueryException catch (e) {
-        return Response.serverError(body: ModelResponse(message: e.message));
+        return AppResponse.serverError(e.message);
       }
     } catch (e) {
       return AppResponse.serverError(e, message: 'Ошибка добавления данных');
@@ -119,9 +127,8 @@ class AppFinancialRecordConroller extends ResourceController {
       if (record.category == null ||
           record.operationName == null ||
           record.sum == null) {
-        return Response.badRequest(
-          body: ModelResponse(message: 'Не заполнены обязательные поля'),
-        );
+        return AppResponse.badrequest(
+            message: 'Не заполнены обязательные поля');
       }
       record.date ??= DateTime.now();
       final id = record.id;
@@ -145,7 +152,7 @@ class AppFinancialRecordConroller extends ResourceController {
           ..values.record = value;
         await qCreateHistory.insert();
       });
-      return Response.ok(value);
+      return AppResponse.ok(body: value);
     } catch (e) {
       return AppResponse.serverError(e, message: 'Ошибка обновления данных');
     }

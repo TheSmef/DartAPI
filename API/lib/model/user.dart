@@ -1,7 +1,9 @@
 import 'package:conduit/conduit.dart';
 
 
-class User extends ManagedObject<_User> implements _User {}
+class User extends ManagedObject<_User> implements _User {
+  Map<String,dynamic> toJson()=> asMap();
+}
 
 class _User {
   @primaryKey

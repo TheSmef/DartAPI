@@ -47,7 +47,7 @@ class AppUserConttolelr extends ResourceController {
         ..where((element) => element.id)
             .equalTo(id) // Поиск пользователя осущетсвляется по id
         ..values.userName = user.userName ?? fUser!.userName
-        ..values.userName = user.email ?? fUser!.email;
+        ..values.email = user.email ?? fUser!.email;
       // Вызов функция для обновления данных пользователя
       await qUpdateUser.updateOne();
       // Получаем обновленного пользователя
@@ -67,8 +67,8 @@ class AppUserConttolelr extends ResourceController {
   @Operation.put()
   Future<Response> updatePassword(
     @Bind.header(HttpHeaders.authorizationHeader) String header,
-    @Bind.body() String newPassword,
-    @Bind.body() String oldPassword,
+    @Bind.query("newPassword") String newPassword,
+    @Bind.query("oldPassword") String oldPassword,
   ) async {
     try {
       // Получаем id пользователя
@@ -109,9 +109,9 @@ class AppUserConttolelr extends ResourceController {
         ..values.hashPassword = newHashPassword;
 
       // Обновляем пароль
-      await qUpdateUser.fetchOne();
+      await qUpdateUser.updateOne();
 
-      return AppResponse.ok(body: 'Пароль успешно обновлен');
+      return AppResponse.ok(message: 'Пароль успешно обновлен');
     } catch (e) {
       return AppResponse.serverError(e, message: 'Ошибка обновления пароля');
     }

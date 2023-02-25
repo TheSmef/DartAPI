@@ -4,7 +4,9 @@ import 'package:conduit/conduit.dart';
 import 'package:dart_application_1/model/historyrecord.dart';
 
 class FinancialRecord extends ManagedObject<_FinancialRecord>
-    implements _FinancialRecord {}
+    implements _FinancialRecord {
+        Map<String,dynamic> toJson()=> asMap();
+    }
 
 class _FinancialRecord {
   @primaryKey

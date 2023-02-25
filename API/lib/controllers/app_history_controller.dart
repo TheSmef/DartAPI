@@ -42,7 +42,7 @@ class AppHistoryConroller extends ResourceController {
       if (response.isEmpty) {
         return Response.noContent();
       }
-      return Response.ok(response);
+      return AppResponse.ok(body: response);
     } catch (e) {
       return AppResponse.serverError(e, message: 'Ошибка получения данных');
     }

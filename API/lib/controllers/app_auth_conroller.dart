@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:conduit/conduit.dart';
+import 'package:dart_application_1/utilts/appresponse.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
 
 import '../model/modelresponse.dart';
@@ -15,8 +16,8 @@ class AppAuthContoller extends ResourceController {
   @Operation.post()
   Future<Response> signIn(@Bind.body() User user) async {
     if (user.password == null || user.userName == null) {
-      return Response.badRequest(
-          body: ModelResponse(message: 'Поля  password username обязательны'));
+      return AppResponse.badrequest(
+          message: 'Поля  password username обязательны');
     }
 
     try {
@@ -59,17 +60,15 @@ class AppAuthContoller extends ResourceController {
         throw QueryException.input('Не верный пароль', []);
       }
     } on QueryException catch (e) {
-      return Response.serverError(body: ModelResponse(message: e.message));
+      return AppResponse.serverError(e.message, message: e.message);
     }
   }
 
   @Operation.put()
   Future<Response> signUp(@Bind.body() User user) async {
     if (user.password == null || user.userName == null || user.email == null) {
-      return Response.badRequest(
-        body:
-            ModelResponse(message: 'Поля  password username email обязательны'),
-      );
+      return AppResponse.badrequest(
+          message: 'Поля  password username email обязательны');
     }
 
     // Генерация соли
@@ -102,14 +101,12 @@ class AppAuthContoller extends ResourceController {
       // Получаем данные пользователя по id
       final userData = await managedContext.fetchObjectWithID<User>(id);
 
-      return Response.ok(
-        ModelResponse(
-          data: userData!.backing.contents,
-          message: 'Пользователь успешно зарегистрировался',
-        ),
+      return AppResponse.ok(
+        body: userData!.backing.contents,
+        message: 'Пользователь успешно зарегистрировался',
       );
     } on QueryException catch (e) {
-      return Response.serverError(body: ModelResponse(message: e.message));
+      return AppResponse.serverError(e.message, message: e.message);
     }
   }
 
@@ -137,7 +134,7 @@ class AppAuthContoller extends ResourceController {
         ),
       );
     } on QueryException catch (e) {
-      return Response.serverError(body: ModelResponse(message: e.message));
+      return AppResponse.serverError(e.message, message: e.message);
     }
   }
 
