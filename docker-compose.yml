@@ -8,16 +8,19 @@ services:
     ports:
       - 8080:8080
     environment:
-      - DB_PORT=5055
+      - DB_PORT=5432
+      - DB_HOST=postgree
   postgree:
     restart: always
     image: postgres
     environment:
-      POSTGRES_PASSWORD: 123
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=dartbase
     ports:
-      - 5432:5055
+      - 5432:5432
   adminer:
     restart: always
     image: adminer
     ports:
-      - 8888:8080
+      - 2222:8080

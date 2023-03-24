@@ -1,5 +1,5 @@
 username: "postgres"
 password: "123"
 host: "postgree"
-port: 5055
+port: 5432
 databaseName: "dartbase"
