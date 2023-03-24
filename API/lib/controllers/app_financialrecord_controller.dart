@@ -1,6 +1,5 @@
 import 'package:conduit/conduit.dart';
 import 'package:dart_application_1/model/financialrecord.dart';
-import 'package:dart_application_1/model/getmodel.dart';
 import 'package:dart_application_1/model/historyrecord.dart';
 import '../model/modelresponse.dart';
 import '../utilts/appresponse.dart';
@@ -26,7 +25,7 @@ class AppFinancialRecordConroller extends ResourceController {
           case "category":
             {
               records = Query<FinancialRecord>(managedContext)
-                ..where((element) => element.category).contains(option ?? '')
+                ..where((element) => element.category).contains(option)
                 ..where((element) => element.status).equalTo(status)
                 ..fetchLimit = fetch
                 ..offset = offset;
@@ -35,8 +34,7 @@ class AppFinancialRecordConroller extends ResourceController {
           case "name":
             {
               records = Query<FinancialRecord>(managedContext)
-                ..where((element) => element.operationName)
-                    .contains(option ?? "")
+                ..where((element) => element.operationName).contains(option)
                 ..where((element) => element.status).equalTo(status)
                 ..fetchLimit = fetch
                 ..offset = offset;
@@ -89,12 +87,12 @@ class AppFinancialRecordConroller extends ResourceController {
         int id = -1;
         await managedContext.transaction((transaction) async {
           final qCreateRecord = Query<FinancialRecord>(transaction)
-        ..values.category = record.category
-        ..values.description = record.description
-        ..values.date = record.date
-        ..values.status = record.status
-        ..values.operationName = record.operationName
-        ..values.sum = record.sum;
+            ..values.category = record.category
+            ..values.description = record.description
+            ..values.date = record.date
+            ..values.status = record.status
+            ..values.operationName = record.operationName
+            ..values.sum = record.sum;
           final createdRecord = await qCreateRecord.insert();
           id = createdRecord.id!;
         });

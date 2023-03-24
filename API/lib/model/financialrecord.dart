@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:conduit/conduit.dart';
 import 'package:dart_application_1/model/historyrecord.dart';

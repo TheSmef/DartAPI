@@ -7,9 +7,6 @@ import 'controllers/app_auth_conroller.dart';
 import 'controllers/app_token_controller.dart';
 import 'controllers/app_user_controller.dart';
 
-import '../model/user.dart';
-import '../model/financialrecord.dart';
-import '../model/historyrecord.dart';
 
 class AppService extends ApplicationChannel {
   late final ManagedContext managerContext;
